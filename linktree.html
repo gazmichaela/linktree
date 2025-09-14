@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linktree-gazmichaela</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<link rel="icon" href="my_profile.jpg" type="image/x-icon">
+<style>
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    background:
+        radial-gradient(ellipse at 20% 30%, rgba(53, 5, 115, 0.8), transparent 70%),
+        radial-gradient(ellipse at 80% 70%, rgba(23, 72, 157, 0.7), transparent 70%),
+        linear-gradient(135deg, #370b65, #1e51a8, #0f0f0f);
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+canvas#constellations {
+    position: fixed;
+    top:0; left:0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* pod tvým obsahem */
+}
+
+.container {
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.profile-pic {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    display: block;
+    margin: 40px auto 20px;
+    border-radius: 50%;
+    -webkit-tap-highlight-color: transparent;
+}
+
+h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.btn {
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #fff;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    border-radius: 12px;
+    font-size: 20px;
+    text-align: center;
+    display: block;
+    margin: 10px auto;
+    padding: 10px;
+    width: 500px;
+    background: rgba(255,255,255,0.05);
+}
+
+.btn i {
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+.btn:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    background: rgba(255,255,255,0.15);
+}
+
+@media (max-width: 500px) {
+    .container {
+        padding: 40px 20px;
+    }
+}
+</style>
+</head>
+<body>
+
+<canvas id="constellations"></canvas>
+
+<div class="container">
+    <img src="my_profile.jpg" alt="Profilová fotka" class="profile-pic">
+    <h1>gazmichaela</h1>
+    <a href="https://gazmichaela.github.io/biology/" target="_blank" class="btn web"><i class="fas fa-link"></i> Web</a>
+    <a href="https://www.instagram.com/mg._.6667/" target="_blank" class="btn instagram"><i class="fab fa-instagram"></i> Instagram</a>
+    <a href="https://discord.com/users/1302966865420615683" target="_blank" class="btn discord"><i class="fab fa-discord"></i> Discord</a>
+    <a href="https://github.com/gazmichaela" target="_blank" class="btn github"><i class="fab fa-github"></i> Github</a>
+    <a href="mailto:michaela09g@gmail.com" target="_blank" class="btn e-mail"><i class="fas fa-envelope"></i> Email</a>
+</div>
+<canvas id="constellations"></canvas>
+
+<script>
+const canvas = document.getElementById("constellations");
+const ctx = canvas.getContext("2d");
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+const mouse = {x: null, y: null};
+window.addEventListener('mousemove', e => { mouse.x = e.x; mouse.y = e.y; });
+
+// hvězdný prach
+const smallStars = [];
+for(let i=0; i<200; i++){
+    smallStars.push({
+        x: Math.random()*canvas.width,
+        y: Math.random()*canvas.height,
+        r: Math.random()*1.2,
+        brightness: Math.random()*0.5+0.2,
+        vx: (Math.random()-0.5)*0.05,
+        vy: (Math.random()-0.5)*0.05
+    });
+}
+
+// souhvězdí
+const clusters = [];
+const numClusters = 9; // více souhvězdí
+
+for(let i=0; i<numClusters; i++){
+    const cluster = [];
+    const centerX = Math.random()*canvas.width;
+    const centerY = Math.random()*canvas.height;
+    const numStars = Math.floor(Math.random()*5 + 4); // 4-8 hvězd
+    const clusterHue = 230 + Math.random()*40;
+
+    for(let j=0; j<numStars; j++){
+        cluster.push({
+            cx: centerX,
+            cy: centerY,
+            x: centerX + Math.random()*200-100,
+            y: centerY + Math.random()*200-100,
+            baseR: Math.random()*2+1.5,
+            r: 0,
+            vx: (Math.random()-0.5)*0.2,
+            vy: (Math.random()-0.5)*0.2,
+            color: `hsl(${clusterHue + Math.random()*20}, 60%, 70%)`
+        });
+    }
+    clusters.push(cluster);
+}
+
+function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    // hvězdný prach
+    for(let star of smallStars){
+        star.x += star.vx;
+        star.y += star.vy;
+
+        if(star.x < 0 || star.x > canvas.width) star.vx *= -1;
+        if(star.y < 0 || star.y > canvas.height) star.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.r, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(255,255,255,${star.brightness})`;
+        ctx.fill();
+    }
+
+    // souhvězdí
+    for(let cluster of clusters){
+        for(let star of cluster){
+            // lehký pohyb
+            star.x += star.vx;
+            star.y += star.vy;
+
+            if(star.x < 0 || star.x > canvas.width) star.vx *= -1;
+            if(star.y < 0 || star.y > canvas.height) star.vy *= -1;
+
+            // interakce s myší
+            if(mouse.x && mouse.y){
+                const dx = mouse.x - star.x;
+                const dy = mouse.y - star.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if(dist < 120){
+                    star.x += dx*0.002;
+                    star.y += dy*0.002;
+                }
+            }
+
+            ctx.beginPath();
+            ctx.arc(star.x, star.y, star.baseR, 0, Math.PI*2);
+            ctx.fillStyle = star.color;
+            ctx.fill();
+        }
+
+        // spojovací čáry uvnitř clusteru
+        ctx.strokeStyle = "rgba(255,255,255,0.25)";
+        ctx.beginPath();
+        for(let i=0; i<cluster.length; i++){
+            for(let j=i+1; j<cluster.length; j++){
+                ctx.moveTo(cluster[i].x, cluster[i].y);
+                ctx.lineTo(cluster[j].x, cluster[j].y);
+            }
+        }
+        ctx.stroke();
+    }
+
+    requestAnimationFrame(animate);
+}
+animate();
+</script>
+
+<style>
+canvas#constellations {
+    position: fixed;
+    top:0; left:0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+</style>
+
+</body>
+</html>
