@@ -83,11 +83,31 @@ h1 {
     background: rgba(255,255,255,0.15);
 }
 
+/* desktop zůstává beze změny */
+.btn {
+    width: 500px;
+    padding: 10px;
+    font-size: 20px;
+    border-radius: 12px;
+}
+
+/* mobilní zařízení */
 @media (max-width: 500px) {
     .container {
-        padding: 40px 20px;
+        transform: scale(0.8);   /* zmenší vše najednou */
+        transform-origin: top center;
+    }
+
+    h1 {
+        font-size: 18px;          /* text proporčně zmenšen */
+    }
+
+    .profile-pic {
+        width: 80px;
+        height: 80px;
     }
 }
+
 </style>
 </head>
 <body>
